@@ -6,22 +6,18 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class SubscribeTransaction extends Model
+class CourseVideo extends Model
 {
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'total_amount',
-        'is_paid',
-        'subscription_start_date',
-        'proof',
-        'about',
-        'user_id',
+        'name',
+        'path_video',
+        'course_id',
     ];
 
-
-    public function user()
+    public function course()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Course::class);
     }
 }
