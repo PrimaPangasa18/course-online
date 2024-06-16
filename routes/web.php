@@ -28,17 +28,23 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::get('/checkout', [FrontController::class, 'checkout'])->name('front.checkout');
-    Route::get('/checkout_store', [FrontController::class, 'checkout_store'])->name('front.checkout.store');
+    // Harus login terlebih dahulu supaya bisa checkout dan membeli kursus tersebut
+    Route::get('/checkout', [FrontController::class, 'checkout'])->name('front.checkout')->middleware('role:student');
+    Route::get('/checkout_store', [FrontController::class, 'checkout_store'])->name('front.checkout.store')->middleware('role:student');
 
-
-
+    // domain.com/learning/100/5 ->maksudnya learning/course ke 30/vide0 5: Belajar PHP
+    Route::get('/learning/{course}/{courseVideoId} ', [FrontController::class, 'learning'])->name('front.learning')->middleware('role:student|teacher|owner');
 
     Route::prefix('admin')->name('admin.')->group(function () {
         Route::resource('categories', CategoryController::class)->middleware('role:owner'); //admin.categories.index/show/delete
         Route::resource('teachers', TeacherController::class)->middleware('role:owner');
         Route::resource('courses', CourseController::class)->middleware('role:owner|teacher');
         Route::resource('subscribe_transactions', SubscribeTransactionController::class)->middleware('role:owner');
+
+
+        Route::get('/add/video/{course:id}', [CourseController::class, 'create'])->name('course.add_video')->middleware('role:owner|teacher');
+        Route::post('/add/video/save/{course:id}', [CourseController::class, 'store'])->name('course.add_video.save')->middleware('role:owner|teacher');
+
         Route::resource('course_videos', CourseVideoController::class)->middleware('role:owner|teacher');
     });
 });
